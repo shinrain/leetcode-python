@@ -1,0 +1,4074 @@
+
+========================================
+(1). /Users/linxie/Documents/github/leetcode-python/3sum/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of lists of length 3, [[val1,val2,val3]]
+    def threeSum(self, num):
+        num.sort()
+        res = []
+        for i in range(len(num) - 2):
+            if i == 0 or i > 0 and num[i - 1] != num[i]:
+                left = i + 1
+                right = len(num) - 1
+                while left < right:
+                    s = num[i] + num[left] + num[right]
+                    if s == 0:
+                        res.append([num[i], num[left], num[right]])
+                        left += 1
+                        right -= 1
+                        while left < right and num[left] == num[left - 1]:
+                            left += 1
+                        while right > left and num[right] == num[right + 1]:
+                            right -= 1
+                    elif s < 0:
+                        left += 1
+                    else:
+                        right -= 1
+        return res
+
+
+
+========================================
+(2). /Users/linxie/Documents/github/leetcode-python/3sum_closest/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def threeSumClosest(self, num, target):
+        num.sort()
+        n = len(num)
+        res = num[0] + num[1] + num[2]
+        for i in range(n - 2):
+            l = i + 1
+            r = n - 1
+            while l < r:
+                s = num[i] + num[l] + num[r]
+                if abs(s - target) < abs(res - target):
+                    res = s
+                if s == target:
+                    return s
+                elif s < target:
+                    l += 1
+                else:
+                    r -= 1
+        return res
+
+
+
+========================================
+(3). /Users/linxie/Documents/github/leetcode-python/4sum/solution.py
+========================================
+
+
+# Time Limit Exceeded
+class Solution:
+    # @return a list of lists of length 4, [[val1,val2,val3,val4]]
+    def fourSum(self, num, target):
+        n = len(num)
+        num.sort()
+        res = []
+        for a in range(n - 3):
+            if a > 0 and num[a - 1] == num[a]:
+                continue
+            for b in range(a + 1, n - 2):
+                if b > a + 1 and num[b - 1] == num[b]:
+                    continue
+                c = b + 1
+                d = n - 1
+                while c < d:
+                    s = num[a] + num[b] + num[c] + num[d]
+                    if s == target:
+                        res.append([num[a], num[b], num[c], num[d]])
+                        c += 1
+                        d -= 1
+                        while c < d and num[c] == num[c - 1]:
+                            c += 1
+                        while c < d and num[d] == num[d + 1]:
+                            d -= 1
+                    elif s < target:
+                        c += 1
+                    else:
+                        d -= 1
+        return res
+
+
+
+========================================
+(4). /Users/linxie/Documents/github/leetcode-python/add_binary/solution.py
+========================================
+
+
+class Solution:
+    # @param a, a string
+    # @param b, a string
+    # @return a string
+    def addBinary(self, a, b):
+        res = []
+        # a is longer than b
+        if len(a) < len(b):
+            b, a = a, b
+        n = len(a)
+        m = len(b)
+        c = 0  # Carry bit
+        r = 0  # Result bit
+        # i = n - 1 ... 0
+        for k in range(n):
+            i = n - 1 - k
+            if k < m:
+                j = m - 1 - k
+                r = (int(a[i]) + int(b[j]) + c) % 2
+                c = (int(a[i]) + int(b[j]) + c) / 2
+            else:
+                r = (int(a[i]) + c) % 2
+                c = (int(a[i]) + c) / 2
+            res.insert(0, str(r))
+        if c == 1:
+            res.insert(0, str(c))
+        return ''.join(res)
+
+
+
+========================================
+(5). /Users/linxie/Documents/github/leetcode-python/add_two_numbers/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @return a ListNode
+    def addTwoNumbers(self, l1, l2):
+        carry = 0
+        res = None
+        res_end = None
+        while l1 is not None and l2 is not None:
+            temp = l1.val + l2.val + carry
+            digit = temp % 10
+            carry = temp / 10
+            if res is None:
+                res = ListNode(digit)
+                res_end = res
+            else:
+                res_end.next = ListNode(digit)
+                res_end = res_end.next
+            l1 = l1.next
+            l2 = l2.next
+        rem = None
+        if l1 is not None:
+            rem = l1
+        else:
+            rem = l2
+        while rem is not None:
+            temp = rem.val + carry
+            digit = temp % 10
+            carry = temp / 10
+            if res is None:
+                res = ListNode(digit)
+                res_end = res
+            else:
+                res_end.next = ListNode(digit)
+                res_end = res_end.next
+            rem = rem.next
+        if carry == 1:
+            res_end.next = ListNode(1)
+            res_end = res_end.next
+        return res
+
+
+
+========================================
+(6). /Users/linxie/Documents/github/leetcode-python/anagrams/solution.py
+========================================
+
+
+class Solution:
+    # @param strs, a list of strings
+    # @return a list of strings
+    def anagrams(self, strs):
+        d = {}
+        res = []
+        for i, s in enumerate(strs):
+            key = self.make_key(s)
+            # First occurence of an anagram
+            if key not in d:
+                d[key] = [s]
+            else:
+                d[key].append(s)
+        for key in d:
+            if len(d[key]) > 1:
+                res += d[key]
+        return res
+
+    def make_key(self, s):
+        """Generate character-frequency key based on s"""
+        d = {}
+        res = []
+        for c in s:
+            if c in d:
+                d[c] += 1
+            else:
+                d[c] = 1
+        # Iterate form 'a' to 'z'
+        # This make sure the character occurences is ordered
+        # and thus unique
+        for i in range(ord('a'), ord('z') + 1):
+            c = chr(i)
+            if c in d:
+                res.append(c)
+                res.append(str(d[c]))
+        return ''.join(res)
+
+
+
+========================================
+(7). /Users/linxie/Documents/github/leetcode-python/balanced_binary_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a boolean
+    def isBalanced(self, root):
+        if root is None:
+            return True
+        else:
+            if self.isBalanced(root.left) and self.isBalanced(root.right):
+                return abs(self.depth(root.left) - self.depth(root.right)) <= 1
+            else:
+                return False
+
+    def depth(self, root):
+        if root is None:
+            return -1
+        else:
+            return max(self.depth(root.left), self.depth(root.right)) + 1
+
+
+
+========================================
+(8). /Users/linxie/Documents/github/leetcode-python/best_time_to_buy_and_sell_stock/solution.py
+========================================
+
+
+class Solution:
+    # @param prices, a list of integer
+    # @return an integer
+    def maxProfit(self, prices):
+        if not prices:
+            return 0
+        max_profit = 0
+        min_price = prices[0]
+        for i, p in enumerate(prices, start=0):
+            max_profit = max(max_profit, (p - min_price))
+            min_price = min(min_price, p)
+        return max_profit
+
+
+
+========================================
+(9). /Users/linxie/Documents/github/leetcode-python/best_time_to_buy_and_sell_stock_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param prices, a list of integer
+    # @return an integer
+    def maxProfit(self, prices):
+        if not prices:
+            return 0
+        max_profit = 0
+        for i in range(1, len(prices)):
+            if prices[i] > prices[i - 1]:
+                max_profit += prices[i] - prices[i - 1]
+        return max_profit
+
+
+
+========================================
+(10). /Users/linxie/Documents/github/leetcode-python/best_time_to_buy_and_sell_stock_iii/solution.py
+========================================
+
+
+class Solution:
+    # @param prices, a list of integer
+    # @return an integer
+    def maxProfit(self, prices):
+        if not prices:
+            return 0
+        n = len(prices)
+        m1 = [0] * n
+        m2 = [0] * n
+        max_profit1 = 0
+        min_price1 = prices[0]
+        max_profit2 = 0
+        max_price2 = prices[-1]
+        for i in range(n):
+            max_profit1 = max(max_profit1, prices[i] - min_price1)
+            m1[i] = max_profit1
+            min_price1 = min(min_price1, prices[i])
+        for i in range(n):
+            max_profit2 = max(max_profit2, max_price2 - prices[n - 1 - i])
+            m2[n - 1 - i] = max_profit2
+            max_price2 = max(max_price2, prices[n - 1 - i])
+        max_profit = 0
+        for i in range(n):
+            max_profit = max(m1[i] + m2[i], max_profit)
+        return max_profit
+
+
+
+========================================
+(11). /Users/linxie/Documents/github/leetcode-python/binary_tree_inorder_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a list of integers
+    def inorderTraversal(self, root):
+        path = []
+        if root is None:
+            return path
+        stack = []
+        while stack or root is not None:
+            if root is not None:
+                stack.append(root)
+                root = root.left
+            else:
+                root = stack.pop()
+                path.append(root.val)
+                root = root.right
+        return path
+
+
+
+========================================
+(12). /Users/linxie/Documents/github/leetcode-python/binary_tree_level_order_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a list of lists of integers
+    def levelOrder(self, root):
+        res = []
+        if root is None:
+            return res
+        queue = []
+        level = []
+        queue.append(root)
+        queue.append(None)
+        while queue:
+            root = queue.pop(0)
+            if root is None:
+                res.append(level[:])
+                level = []
+                if queue:
+                    queue.append(None)
+            else:
+                level.append(root.val)
+                if root.left is not None:
+                    queue.append(root.left)
+                if root.right is not None:
+                    queue.append(root.right)
+        return res
+
+
+
+========================================
+(13). /Users/linxie/Documents/github/leetcode-python/binary_tree_level_order_traversal_ii/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a list of lists of integers
+    def levelOrderBottom(self, root):
+        stack = []
+        if root is None:
+            return stack
+        queue = []
+        level = []
+        queue.append(root)
+        queue.append(None)
+        while queue:
+            root = queue.pop(0)
+            if root is None:
+                stack.append(level[:])
+                level = []
+                if queue:
+                    queue.append(None)
+            else:
+                level.append(root.val)
+                if root.left is not None:
+                    queue.append(root.left)
+                if root.right is not None:
+                    queue.append(root.right)
+        res = []
+        while stack:
+            res.append(stack.pop())
+        return res
+
+
+
+========================================
+(14). /Users/linxie/Documents/github/leetcode-python/binary_tree_postorder_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a list of integers
+    def postorderTraversal(self, root):
+        path = []
+        if root is None:
+            return path
+        stack1 = []
+        stack2 = []
+        stack1.append(root)
+        while stack1:
+            root = stack1.pop()
+            stack2.append(root.val)
+            if root.left is not None:
+                stack1.append(root.left)
+            if root.right is not None:
+                stack1.append(root.right)
+        while stack2:
+            path.append(stack2.pop())
+        return path
+
+
+
+========================================
+(15). /Users/linxie/Documents/github/leetcode-python/binary_tree_preorder_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a list of integers
+    def preorderTraversal(self, root):
+        path = []
+        if root is None:
+            return path
+        stack = []
+        stack.append(root)
+        while stack:
+            root = stack.pop()
+            path.append(root.val)
+            if root.right is not None:
+                stack.append(root.right)
+            if root.left is not None:
+                stack.append(root.left)
+        return path
+
+
+
+========================================
+(16). /Users/linxie/Documents/github/leetcode-python/binary_tree_zigzag_level_order_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a list of lists of integers
+    def zigzagLevelOrder(self, root):
+        if root is None:
+            return []
+        res = []
+        queue = []
+        rev = False  # Reverse direction
+        level = []
+        queue.append(root)
+        queue.append(None)
+        while queue:
+            root = queue.pop(0)
+            if root is None:
+                if queue:
+                    queue.append(None)
+                res.append(level)
+                level = []
+                rev = not rev  # Toggle direction
+            else:
+                if rev:
+                    level.insert(0, root.val)
+                else:
+                    level.append(root.val)
+                if root.left is not None:
+                    queue.append(root.left)
+                if root.right is not None:
+                    queue.append(root.right)
+        return res
+
+
+
+========================================
+(17). /Users/linxie/Documents/github/leetcode-python/climbing_stairs/solution.py
+========================================
+
+
+class Solution:
+    # @param n, an integer
+    # @return an integer
+    def climbStairs(self, n):
+        t = [0] * (n + 1)
+        t[1] = 1
+        if n == 1:
+            return t[1]
+        t[2] = 2
+        if n <= 2:
+            return t[n]
+        for i in range(3, n + 1):
+            t[i] = t[i - 1] + t[i - 2]
+        return t[n]
+
+
+
+========================================
+(18). /Users/linxie/Documents/github/leetcode-python/combination_sum/solution.py
+========================================
+
+
+class Solution:
+    # @param candidates, a list of integers
+    # @param target, integer
+    # @return a list of lists of integers
+    def combinationSum(self, candidates, target):
+        res = []
+        cand = []
+        candidates.sort()
+        self.combination_sum(candidates, cand, target, res)
+        return res
+
+    def combination_sum(self, candidates, cand, target, res):
+        if target < 0:
+            return
+        elif target == 0:
+            res.append(cand[:])
+        else:
+            for i, c in enumerate(candidates):
+                cand.append(c)
+                self.combination_sum(candidates[i:], cand, target - c, res)
+                cand.pop()
+
+
+
+========================================
+(19). /Users/linxie/Documents/github/leetcode-python/combination_sum_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param candidates, a list of integers
+    # @param target, integer
+    # @return a list of lists of integers
+    def combinationSum2(self, candidates, target):
+        candidates.sort()
+        res = []
+        cand = []
+        self.combination_sum(candidates, target, cand, res)
+        return res
+
+    def combination_sum(self, candidates, target, cand, res):
+        if target == 0:
+            res.append(cand[:])
+        elif target < 0:
+            return
+        else:
+            for i, c in enumerate(candidates):
+                if i == 0:
+                    prev = c
+                elif prev == c:
+                    continue
+                else:
+                    prev = c
+                cand.append(c)
+                self.combination_sum(candidates[i + 1:], target - c, cand, res)
+                cand.pop()
+
+
+
+========================================
+(20). /Users/linxie/Documents/github/leetcode-python/combinations/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of lists of integers
+    def combine(self, n, k):
+        a = range(1, n + 1)
+        return self.combine_aux(a, k)
+
+    def combine_aux(self, a, k):
+        if k == 0:
+            return [[]]
+        else:
+            res = []
+            for i, e in enumerate(a):
+                rest_comb = self.combine_aux(a[i + 1:], k - 1)
+                for comb in rest_comb:
+                    comb.insert(0, e)
+                res += rest_comb
+            return res
+
+
+
+========================================
+(21). /Users/linxie/Documents/github/leetcode-python/construct_binary_tree_from_inorder_and_postorder_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param inorder, a list of integers
+    # @param postorder, a list of integers
+    # @return a tree node
+    def buildTree(self, inorder, postorder):
+        if not inorder or not postorder:
+            return None
+        else:
+            d = postorder[-1]
+            root = TreeNode(d)
+            i = inorder.index(d)
+            left = self.buildTree(inorder[:i], postorder[:i])
+            right = self.buildTree(inorder[i + 1:], postorder[i:-1])
+            root.left = left
+            root.right = right
+            return root
+
+
+
+========================================
+(22). /Users/linxie/Documents/github/leetcode-python/construct_binary_tree_from_preorder_and_inorder_traversal/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param preorder, a list of integers
+    # @param inorder, a list of integers
+    # @return a tree node
+    def buildTree(self, preorder, inorder):
+        if len(inorder) == 0:
+            return None
+        else:
+            root_val = preorder.pop(0)
+            root_index = inorder.index(root_val)
+            left_tree = self.buildTree(preorder, inorder[:root_index])
+            right_tree = self.buildTree(preorder, inorder[root_index + 1:])
+            root = TreeNode(root_val)
+            root.left = left_tree
+            root.right = right_tree
+            return root
+
+
+
+========================================
+(23). /Users/linxie/Documents/github/leetcode-python/container_with_most_water/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def maxArea(self, height):
+        n = len(height)
+        i = 0
+        j = n - 1
+        max_area = 0
+        while i < j:
+            max_area = max(max_area, (j - i) * min(height[i], height[j]))
+            if height[i] <= height[j]:
+                i += 1
+            else:
+                j -= 1
+        return max_area
+
+
+
+========================================
+(24). /Users/linxie/Documents/github/leetcode-python/convert_sorted_array_to_binary_search_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param num, a list of integers
+    # @return a tree node
+    def sortedArrayToBST(self, num):
+        if not num:
+            return None
+        else:
+            mid = len(num) / 2
+            left_array = num[:mid]
+            right_array = num[mid + 1:]
+            root = TreeNode(num[mid])
+            left_tree = self.sortedArrayToBST(left_array)
+            right_tree = self.sortedArrayToBST(right_array)
+            root.left = left_tree
+            root.right = right_tree
+            return root
+
+
+
+========================================
+(25). /Users/linxie/Documents/github/leetcode-python/convert_sorted_list_to_binary_search_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+#
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a list node
+    # @return a tree node
+    def sortedListToBST(self, head):
+        if head is None:
+            return None
+        else:
+            # Get the middle node
+            slow = head
+            fast = head
+            prev = None  # Previous node to slow (mid)
+            while fast.next is not None and fast.next.next is not None:
+                prev = slow
+                fast = fast.next.next
+                slow = slow.next
+            if head == slow:
+                head = None
+            if prev is not None:
+                prev.next = None
+            root = TreeNode(slow.val)
+            left = self.sortedListToBST(head)
+            right = self.sortedListToBST(slow.next)
+            root.left = left
+            root.right = right
+            return root
+
+
+
+========================================
+(26). /Users/linxie/Documents/github/leetcode-python/copy_list_with_random_pointer/solution.py
+========================================
+
+
+# Definition for singly-linked list with a random pointer.
+# class RandomListNode:
+#     def __init__(self, x):
+#         self.label = x
+#         self.next = None
+#         self.random = None
+
+class Solution:
+    # @param head, a RandomListNode
+    # @return a RandomListNode
+    def copyRandomList(self, head):
+        if head is None:
+            return None
+        h = head
+        p = h
+        while p is not None:
+            next_node = p.next
+            new_node = RandomListNode(p.label)
+            # Insert new node to the original list
+            p.next = new_node
+            new_node.next = next_node
+            p = next_node
+        p = h
+        while p is not None:
+            next_node = p.next.next
+            new_node = p.next
+            if p.random is not None:
+                new_node.random = p.random.next
+            p = next_node
+        # Split the list
+        res = None
+        end = None
+        p = h
+        while p is not None:
+            next_node = p.next.next
+            new_node = p.next
+            # Add to new list
+            if res is None:
+                res = new_node
+                end = new_node
+            else:
+                end.next = new_node
+                end = end.next
+            # Delete new node from old list
+            p.next = next_node
+            p = next_node
+        return res
+
+
+
+========================================
+(27). /Users/linxie/Documents/github/leetcode-python/count_and_say/solution.py
+========================================
+
+
+class Solution:
+    # @return a string
+    def countAndSay(self, n):
+        ln = list(str(1))
+        for i in range(1, n):
+            tn = []
+            count = 1
+            prev = None
+            for c in ln:
+                if prev == c:
+                    count += 1
+                if prev is not None and prev != c:
+                    tn.append(str(count))
+                    tn.append(str(prev))
+                    count = 1
+                prev = c
+            tn.append(str(count))
+            tn.append(str(prev))
+            ln = tn
+        return ''.join(ln)
+
+s = Solution()
+print s.countAndSay(1)
+print s.countAndSay(2)
+print s.countAndSay(3)
+print s.countAndSay(4)
+print s.countAndSay(5)
+
+
+
+========================================
+(28). /Users/linxie/Documents/github/leetcode-python/distinct_subsequences/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def numDistinct(self, S, T):
+        if len(S) < len(T):
+            return 0
+        n = len(S)
+        m = len(T)
+        t = [0 for i in range(m + 1)]
+        t[0] = 1
+        for i in range(1, n + 1):
+            # j = m ... 1
+            for k in range(m):
+                j = m - k
+                if S[i - 1] == T[j - 1]:
+                    t[j] += t[j - 1]
+        return t[m]
+
+
+
+========================================
+(29). /Users/linxie/Documents/github/leetcode-python/edit_distance/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def minDistance(self, word1, word2):
+        n = len(word1)
+        m = len(word2)
+        d = [[0 for j in range(m + 1)] for i in range(n + 1)]
+        for i in range(n + 1):
+            d[i][0] = i
+        for j in range(m + 1):
+            d[0][j] = j
+        for i in range(1, n + 1):
+            for j in range(1, m + 1):
+                if word1[i - 1] == word2[j - 1]:
+                    d[i][j] = d[i - 1][j - 1]
+                else:
+                    op = min(d[i - 1][j - 1],  # Substitute
+                             d[i - 1][j],  # Insert
+                             d[i][j - 1])  # Delete
+                    d[i][j] = op + 1
+        return d[n][m]
+
+
+
+========================================
+(30). /Users/linxie/Documents/github/leetcode-python/first_missing_positive/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @return an integer
+    def firstMissingPositive(self, A):
+        n = len(A)
+        i = 0
+        while i < n:
+            j = A[i] - 1
+            if A[i] != i + 1 and A[i] >= 1 and A[i] <= n and A[i] != A[j]:
+                A[i], A[j] = A[j], A[i]
+            else:
+                i += 1
+        for i, e in enumerate(A):
+            if e != i + 1:
+                return i + 1
+        return n + 1
+
+
+
+========================================
+(31). /Users/linxie/Documents/github/leetcode-python/flatten_binary_tree_to_linked_list/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return nothing, do it in place
+    def flatten(self, root):
+        if root is None:
+            return
+        self.flatten(root.left)
+        self.flatten(root.right)
+        left = root.left
+        right = root.right
+        if left is not None:
+            root.right = left
+            root.left = None
+            current = left
+            while current.right is not None:
+                current = current.right
+            current.right = right
+
+
+
+========================================
+(32). /Users/linxie/Documents/github/leetcode-python/gas_station/solution.py
+========================================
+
+
+class Solution:
+    # @param gas, a list of integers
+    # @param cost, a list of integers
+    # @return an integer
+    def canCompleteCircuit(self, gas, cost):
+        n = len(gas)
+        t = [0 for i in range(n)]
+        for i in range(n):
+            t[i] = gas[i] - cost[i]
+        res = 0
+        cs = 0  # Current sum
+        ts = 0  # Total sum
+        for i in range(n):
+            cs += t[i]
+            ts += t[i]
+            if cs < 0:
+                res = i + 1
+                cs = 0
+        if ts < 0:
+            return -1
+        else:
+            return res
+
+    def canCompleteCircuit2(self, gas, cost):
+        # Brute-force
+        n = len(gas)
+        for i in range(n):
+            if gas[i] - cost[i] < 0:
+                continue
+            carry = gas[i] - cost[i]
+            j = (i + 1) % n
+            flag = True
+            while j != i % n:
+                if carry + gas[j] - cost[j] < 0:
+                    flag = False
+                    break
+                j = (j + 1) % n
+            if flag:
+                return i
+        return -1
+
+
+s = Solution()
+print s.canCompleteCircuit2([2, 4], [3, 4])
+
+
+
+========================================
+(33). /Users/linxie/Documents/github/leetcode-python/generate_parentheses/solution.py
+========================================
+
+
+class Solution:
+    # @param an integer
+    # @return a list of string
+    def generateParenthesis(self, n):
+        res = []
+        cand = ''
+        self.gp(n, n, cand, res)
+        return res
+
+    def gp(self, left, right, cand, res):
+        if left > right or left < 0:
+            return
+        elif left == 0 and right == 0:
+            res.append(cand)
+        else:
+            self.gp(left - 1, right, cand + '(', res)
+            self.gp(left, right - 1, cand + ')', res)
+
+
+
+========================================
+(34). /Users/linxie/Documents/github/leetcode-python/gray_code/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of integers
+    def grayCode(self, n):
+        m = 1 << n
+        res = []
+        d = [(1 << (i + 1)) / 2 for i in range(n)]
+        for i in range(m):
+            num = 0
+            for j, e in enumerate(d):
+                if e / (1 << (j + 1)) % 2 == 1:
+                    num += 1 << j
+                d[j] += 1
+            res.append(num)
+        return res
+
+
+
+========================================
+(35). /Users/linxie/Documents/github/leetcode-python/implement_strstr/solution.py
+========================================
+
+
+class Solution:
+    # @param haystack, a string
+    # @param needle, a string
+    # @return a string or None
+    def strStr(self, haystack, needle):
+        n = len(haystack)
+        m = len(needle)
+        for i in range(n + 1 - m):
+            matched = True
+            for k in range(m):
+                if haystack[i + k] != needle[k]:
+                    matched = False
+                    break
+            if matched:
+                return haystack[i:]
+        return None
+
+
+
+========================================
+(36). /Users/linxie/Documents/github/leetcode-python/insertion_sort_list/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @return a ListNode
+    def insertionSortList(self, head):
+        h = head  # h is the temporary head node
+        # First node of h
+        if head is not None:
+            head = head.next
+            h.next = None
+        while head is not None:
+            next_node = head.next
+            # Insertion sort
+            current = h
+            prev = h
+            while current is not None and head.val > current.val:
+                prev = current
+                current = current.next
+            # head is smaller than the head node of h
+            # Insert head to the beginning of h
+            if prev == current:
+                head.next = h
+                h = head
+            # Insert head to the middle or end of h
+            else:
+                prev.next = head
+                head.next = current
+            head = next_node
+        return h
+
+
+
+========================================
+(37). /Users/linxie/Documents/github/leetcode-python/jump_game/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @return a boolean
+    def canJump(self, A):
+        n = len(A)
+        if n == 1:
+            return True
+        t = 0  # Number of remaining steps
+        for i in range(1, n):
+            t = max(t, A[i - 1]) - 1
+            if t < 0:
+                return False
+        return True
+
+
+
+========================================
+(38). /Users/linxie/Documents/github/leetcode-python/jump_game_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @return an integer
+    def jump(self, A):
+        n = len(A)
+        if len(A) == 1:
+            return 0
+        start = 1
+        end = A[0]  # `end` is A[start - 1]
+        res = 1  # At least one step if len(A) > 1
+        reached = False
+        while end < n - 1:
+            res += 1
+            max_end = end  # `end` for the next loop
+            for i in range(start, end + 1):
+                if i + A[i] > max_end:
+                    max_end = i + A[i]
+                    reached = True
+            if not reached:
+                return -1
+            reached = False
+            start = end + 1
+            end = max_end
+        return res
+
+
+s = Solution()
+a1 = [2, 3, 1, 1, 4]
+a2 = [3, 2, 1, 0, 4]
+print s.jump(a1)
+print s.jump(a2)
+
+
+
+========================================
+(39). /Users/linxie/Documents/github/leetcode-python/largest_rectangle_in_histogram/solution.py
+========================================
+
+
+class Solution:
+    # @param height, a list of integer
+    # @return an integer
+    def largestRectangleArea(self, height):
+        if not height:
+            return 0
+        if len(height) == 1:
+            return height[0]
+        stack = []  # The bottom element in the stack is the lowest
+        max_area = 0
+        n = len(height)
+        for i in range(n + 1):
+            while stack and (i == n or height[stack[-1]] > height[i]):
+                h = height[stack.pop()]
+                if stack:
+                    w = i - stack[-1] - 1
+                else:
+                    w = i
+                max_area = max(max_area, h * w)
+            stack.append(i)
+        return max_area
+
+
+
+========================================
+(40). /Users/linxie/Documents/github/leetcode-python/length_of_last_word/solution.py
+========================================
+
+
+class Solution:
+    # @param s, a string
+    # @return an integer
+    def lengthOfLastWord(self, s):
+        n = len(s)
+        i = n - 1
+        while i >= 0 and s[i].isspace():
+            i -= 1
+        res = 0
+        while i >= 0 and not s[i].isspace():
+            res += 1
+            i -= 1
+        return res
+
+
+
+========================================
+(41). /Users/linxie/Documents/github/leetcode-python/letter_combinations_of_a_phone_number/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of strings, [s1, s2]
+    def letterCombinations(self, digits):
+        d = {
+            '2': 'abc',
+            '3': 'def',
+            '4': 'ghi',
+            '5': 'jkl',
+            '6': 'mno',
+            '7': 'pqrs',
+            '8': 'tuv',
+            '9': 'wxyz',
+        }
+        return self.combinations(digits, 0, d)
+
+    def combinations(self, digits, i, d):
+        if i == len(digits):
+            return ['']
+        else:
+            res = []
+            rest_combs = self.combinations(digits, i + 1, d)
+            for comb in rest_combs:
+                number = digits[i]
+                letters = d[number]
+                for letter in letters:
+                    res.append(letter + comb)
+            return res
+
+
+
+========================================
+(42). /Users/linxie/Documents/github/leetcode-python/linked_list_cycle/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @return a boolean
+    def hasCycle(self, head):
+        slow = head
+        fast = head
+        while fast is not None and fast.next is not None:
+            slow = slow.next
+            fast = fast.next.next
+            if slow == fast:
+                return True
+        return False
+
+
+
+========================================
+(43). /Users/linxie/Documents/github/leetcode-python/linked_list_cycle_ii/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @return a list node
+    def detectCycle(self, head):
+        if head is None or head.next is None:
+            return None
+        slow = head
+        fast = head
+        while fast is not None and fast.next is not None:
+            slow = slow.next
+            fast = fast.next.next
+            if fast == slow:
+                break
+        # No cycle
+        if fast is None or fast.next is None:
+            return None
+        # Has a cycle, put `slow` back to head
+        slow = head
+        while True:
+            if fast == slow:
+                break
+            slow = slow.next
+            fast = fast.next
+        return slow
+
+
+
+========================================
+(44). /Users/linxie/Documents/github/leetcode-python/longest_common_prefix/solution.py
+========================================
+
+
+class Solution:
+    # @return a string
+    def longestCommonPrefix(self, strs):
+        if not strs:
+            return ""
+        res = strs[0]
+        for s in strs[1:]:
+            n = len(s)
+            for i, c in enumerate(res):
+                if i >= n or res[i] != s[i]:
+                    res = res[:i]
+                    break
+        return res
+
+
+
+========================================
+(45). /Users/linxie/Documents/github/leetcode-python/longest_consecutive_sequence/solution.py
+========================================
+
+
+class Solution:
+    # @param num, a list of integer
+    # @return an integer
+    def longestConsecutive(self, num):
+        if not num:
+            return 0
+        d = {}
+        for e in num:
+            if e not in d:
+                d[e] = 1
+        res = 1
+        for c in num:
+            current = 1
+            if c not in d:
+                continue
+            while c - 1 in d:
+                c -= 1
+            del d[c]
+            while c + 1 in d:
+                c += 1
+                current += 1
+                del d[c]
+            res = max(res, current)
+        return res
+
+
+
+========================================
+(46). /Users/linxie/Documents/github/leetcode-python/longest_palindromic_substring/solution.py
+========================================
+
+
+class Solution:
+    # @return a string
+    def longestPalindrome(self, s):
+        n = len(s)
+        t = [[False for i in range(n)] for j in range(n)]
+        start = 0
+        max_len = 1
+        for i in range(n):
+            t[i][i] = True
+        for i in range(n - 1):
+            j = i + 1
+            if s[i] == s[j]:
+                t[i][j] = True
+                start = i
+                max_len = 2
+        for l in range(3, n + 1):
+            for i in range(n - l + 1):
+                j = i + l - 1
+                if s[i] == s[j] and t[i + 1][j - 1]:
+                    t[i][j] = True
+                    start = i
+                    max_len = l
+        return s[start:start + max_len]
+
+
+a = 'akaa2baakcbbc'
+s = Solution()
+print s.longestPalindrome(a)
+
+
+
+========================================
+(47). /Users/linxie/Documents/github/leetcode-python/longest_substring_without_repeating_characters/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def lengthOfLongestSubstring(self, s):
+        res = 0
+        cur = 0
+        d = {}
+        for i, c in enumerate(s):
+            if c not in d:
+                cur += 1
+            else:
+                cur = min(i - d[c], cur + 1)
+            d[c] = i
+            res = max(res, cur)
+        return res
+
+
+
+========================================
+(48). /Users/linxie/Documents/github/leetcode-python/lru_cache/solution.py
+========================================
+
+
+"""
+TLE
+"""
+class LRUCache:
+
+    # @param capacity, an integer
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.times = {}
+        self.cache = {}
+        self.timestamp = 0
+
+    # @return an integer
+    def get(self, key):
+        self.timestamp += 1
+        if key in self.cache:
+            self.times[key] = self.timestamp
+            return self.cache[key]
+        return -1
+
+    # @param key, an integer
+    # @param value, an integer
+    # @return nothing
+    def set(self, key, value):
+        self.timestamp += 1
+        if key in self.cache:
+            self.times[key] = self.timestamp
+        else:
+            if len(self.cache) >= self.capacity:
+                lru_key = self.get_lru_key()
+                del self.cache[lru_key]
+                del self.times[lru_key]
+            self.cache[key] = value
+            self.times[key] = self.timestamp
+
+    def get_lru_key(self):
+        min_time = self.timestamp
+        res = None
+        for key in self.times:
+            if self.times[key] <= min_time:
+                res = key
+                min_time = self.times[key]
+        return res
+
+
+
+========================================
+(49). /Users/linxie/Documents/github/leetcode-python/maximal_rectangle/solution.py
+========================================
+
+
+class Solution:
+    # @param matrix, a list of lists of 1 length string
+    # @return an integer
+    def maximalRectangle(self, matrix):
+        # Make a list of heights
+        if not matrix:
+            return 0
+        n = len(matrix)
+        if not matrix[0]:
+            return 0
+        m = len(matrix[0])
+        hist = [[0 for j in range(m)] for i in range(n)]
+        for i in range(n):
+            for j in range(m):
+                if i == 0:
+                    hist[i][j] = int(matrix[i][j])
+                else:
+                    if matrix[i][j] == '1':
+                        hist[i][j] = 1 + hist[i - 1][j]
+        res = 0
+        for row in hist:
+            res = max(res, self.max_hist_rect(row))
+        return res
+
+    def max_hist_rect(self, heights):
+        if not heights:
+            return 0
+        n = len(heights)
+        max_area = heights[0]
+        stack = []
+        for i in range(n + 1):
+            while stack and (i == n or heights[stack[-1]] > heights[i]):
+                h = heights[stack.pop()]
+                if stack:
+                    w = i - stack[-1] - 1
+                else:
+                    w = i
+                max_area = max(max_area, h * w)
+            stack.append(i)
+        return max_area
+
+
+
+========================================
+(50). /Users/linxie/Documents/github/leetcode-python/maximum_depth_of_binary_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return an integer
+    def maxDepth(self, root):
+        if root is None:
+            return 0
+        left_max = self.maxDepth(root.left)
+        right_max = self.maxDepth(root.right)
+        return max(left_max, right_max) + 1
+
+
+
+========================================
+(51). /Users/linxie/Documents/github/leetcode-python/maximum_subarray/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @return an integer
+    def maxSubArray(self, A):
+        if not A:
+            msg = 'The input array must contain at least one number.'
+            raise Exception(msg)
+        max_sum = A[0]
+        max_current = max_sum
+        for i in range(1, len(A)):
+            max_current = max(A[i], max_current + A[i])
+            max_sum = max(max_sum, max_current)
+        return max_sum
+
+
+
+========================================
+(52). /Users/linxie/Documents/github/leetcode-python/merge_intervals/solution.py
+========================================
+
+
+# Definition for an interval.
+# class Interval:
+#     def __init__(self, s=0, e=0):
+#         self.start = s
+#         self.end = e
+
+class Solution:
+    # @param intervals, a list of Interval
+    # @return a list of Interval
+    def merge(self, intervals):
+        if not intervals:
+            return []
+        n = len(intervals)
+        if n == 1:
+            return intervals
+        else:
+            # Sort the intervals by start value
+            intervals.sort(key=lambda x: x.start)
+            res = []
+            res.append(intervals[0])
+            cur_end = intervals[0].end
+            cur_index = 0
+            for interval in intervals[1:]:
+                if interval.start <= cur_end:
+                    if interval.end > cur_end:
+                        res[cur_index].end = interval.end
+                        cur_end = interval.end
+                else:
+                    # Added a non-overlapping interval
+                    res.append(interval)
+                    cur_end = interval.end
+                    cur_index += 1
+            return res
+
+
+
+========================================
+(53). /Users/linxie/Documents/github/leetcode-python/merge_k_sorted_lists/solution.py
+========================================
+
+
+import heapq
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param a list of ListNode
+    # @return a ListNode
+    def mergeKLists(self, lists):
+        if not lists:
+            return None
+        n = len(lists)
+        if n == 1:
+            return lists[0]
+        mid = n / 2
+        l1 = self.mergeKLists(lists[:mid])
+        l2 = self.mergeKLists(lists[mid:])
+        return self.merge(l1, l2)
+
+    def merge(self, l1, l2):
+        res = None
+        end = None
+        cur = None
+        if l1 is None:
+            return l2
+        if l2 is None:
+            return l1
+        while l1 is not None and l2 is not None:
+            if l1.val < l2.val:
+                cur = l1
+                l1 = l1.next
+            else:
+                cur = l2
+                l2 = l2.next
+            if res is None:
+                res = cur
+                end = cur
+            else:
+                end.next = cur
+                end = end.next
+        if l1 is not None:
+            end.next = l1
+        if l2 is not None:
+            end.next = l2
+        return res
+
+    def mergeKLists2(self, lists):
+        # Create a priority queue
+        h = []
+        res = None
+        end = None
+        for l in lists:
+            if l is not None:
+                heapq.heappush(h, (l.val, l))
+        while h:
+            l = heapq.heappop(h)[1]
+            if res is None:
+                res = l
+                end = l
+            else:
+                end.next = l
+                end = end.next
+            if l.next is not None:
+                l = l.next
+                heapq.heappush(h, (l.val, l))
+        return res
+
+
+
+========================================
+(54). /Users/linxie/Documents/github/leetcode-python/merge_sorted_array/solution.py
+========================================
+
+
+class Solution:
+    # @param A  a list of integers
+    # @param m  an integer, length of A
+    # @param B  a list of integers
+    # @param n  an integer, length of B
+    # @return nothing
+    def merge(self, A, m, B, n):
+        i = m - 1
+        j = n - 1
+        k = m + n - 1
+        while i >= 0 and j >= 0:
+            if A[i] > B[j]:
+                A[k] = A[i]
+                i -= 1
+            else:
+                A[k] = B[j]
+                j -= 1
+            k -= 1
+        while j >= 0:
+            A[k] = B[j]
+            j -= 1
+            k -= 1
+
+
+
+========================================
+(55). /Users/linxie/Documents/github/leetcode-python/merge_two_sorted_lists/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param two ListNodes
+    # @return a ListNode
+    def mergeTwoLists(self, l1, l2):
+        res = None
+        res_end = None
+        while l1 is not None and l2 is not None:
+            if l1.val < l2.val:
+                if res is None:
+                    res = l1
+                    res_end = res
+                else:
+                    res_end.next = l1
+                    res_end = res_end.next
+                l1 = l1.next
+            else:
+                if res is None:
+                    res = l2
+                    res_end = res
+                else:
+                    res_end.next = l2
+                    res_end = res_end.next
+                l2 = l2.next
+        if l1 is not None:
+            if res is not None:
+                res_end.next = l1
+            else:
+                res = l1
+        if l2 is not None:
+            if res is not None:
+                res_end.next = l2
+            else:
+                res = l2
+        return res
+
+
+
+========================================
+(56). /Users/linxie/Documents/github/leetcode-python/minimum_depth_of_binary_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return an integer
+    def minDepth(self, root):
+        if root is None:
+            return 0
+        if root.left is None and root.right is None:
+            return 1
+        elif root.left is None and root.right is not None:
+            return self.minDepth(root.right) + 1
+        elif root.left is not None and root.right is None:
+            return self.minDepth(root.left) + 1
+        else:
+            left_min = self.minDepth(root.left)
+            right_min = self.minDepth(root.right)
+            return min(left_min, right_min) + 1
+
+
+
+========================================
+(57). /Users/linxie/Documents/github/leetcode-python/minimum_path_sum/solution.py
+========================================
+
+
+class Solution:
+    # @param grid, a list of lists of integers
+    # @return an integer
+    def minPathSum(self, grid):
+        n = len(grid)
+        m = len(grid[0])
+        t = [[0 for i in range(m)] for j in range(n)]
+        for i in range(n):
+            for j in range(m):
+                if i == 0 and j == 0:
+                    t[i][j] = grid[i][j]
+                elif i == 0:
+                    t[i][j] = grid[i][j] + t[i][j - 1]
+                elif j == 0:
+                    t[i][j] = grid[i][j] + t[i - 1][j]
+                else:
+                    t[i][j] = grid[i][j] + min(t[i - 1][j], t[i][j - 1])
+        return t[n - 1][m - 1]
+
+
+
+========================================
+(58). /Users/linxie/Documents/github/leetcode-python/minimum_window_substring/solution.py
+========================================
+
+
+class Solution:
+    # @return a string
+    def minWindow(self, S, T):
+        s = S
+        t = T
+        d = {}
+        td = {}
+        for c in t:
+            td[c] = td.get(c, 0) + 1
+        left = 0
+        right = 0
+        lefts = []
+        rights = []
+        for i, c in enumerate(s):
+            if c in td:
+                d[c] = d.get(c, 0) + 1
+                if self.contains(d, td):  # Contains all characters
+                    right = i
+                    # Move left pointers
+                    cc = s[left]
+                    while left <= right and (cc not in d or d[cc] > td[cc]):
+                        if cc in d:
+                            d[cc] -= 1
+                        left += 1
+                        cc = s[left]
+                    lefts.append(left)
+                    rights.append(right)
+        if not lefts:
+            return ''
+        res_left = lefts[0]
+        res_right = rights[0]
+        n = len(lefts)
+        for i in range(1, n):
+            if rights[i] - lefts[i] < res_right - res_left:
+                res_left = lefts[i]
+                res_right = rights[i]
+        return s[res_left:res_right + 1]
+
+    def contains(self, d, td):
+        for k in td:
+            if k not in d or d[k] < td[k]:
+                return False
+        return True
+
+
+
+========================================
+(59). /Users/linxie/Documents/github/leetcode-python/n-queens/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of lists of string
+    def solveNQueens(self, n):
+        self.n = n
+        res = []
+        columns = [-1 for i in range(n)]
+        self.solve(columns, 0, res)
+        return res
+
+    def make_string_list(self, columns):
+        sol = []  # One solution (list of strings)
+        row = ['.' for i in columns]
+        for c in columns:
+            new_row = row[:]
+            new_row[c] = 'Q'
+            sol.append(''.join(new_row))
+        return sol
+
+    def is_valid(self, columns, row, col):
+        for r in range(row):
+            c = columns[r]
+            if c == col:
+                return False
+            if abs(c - col) == row - r:
+                return False
+        return True
+
+    def solve(self, columns, row, res):
+        if row == self.n:
+            res.append(self.make_string_list(columns))
+        else:
+            for col in range(self.n):
+                if self.is_valid(columns, row, col):
+                    columns[row] = col
+                    self.solve(columns, row + 1, res)
+
+
+
+========================================
+(60). /Users/linxie/Documents/github/leetcode-python/n-queens_ii/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def totalNQueens(self, n):
+        self.res = 0
+        self.n = n
+        columns = [-1 for i in range(n)]
+        self.solve(columns, 0)
+        return self.res
+
+    def is_valid(self, columns, row, col):
+        for r in range(row):
+            c = columns[r]
+            if c == col:
+                return False
+            if abs(c - col) == row - r:
+                return False
+        return True
+
+    def solve(self, columns, row):
+        if row == self.n:
+            self.res += 1
+        else:
+            for col in range(self.n):
+                if self.is_valid(columns, row, col):
+                    columns[row] = col
+                    self.solve(columns, row + 1)
+
+
+
+========================================
+(61). /Users/linxie/Documents/github/leetcode-python/next_permutation/solution.py
+========================================
+
+
+class Solution:
+    # @param num, a list of integer
+    # @return a list of integer
+    def nextPermutation(self, num):
+        n = len(num)
+        k = -1
+        l = -1
+        # Find the largest k such that num[k] < num[k + 1]
+        for i in range(n - 1):
+            if num[i] < num[i + 1]:
+                k = i
+
+        # Find the largest l such that num[k] < num[l] (if k exists)
+        if k >= 0:
+            for i in range(n):
+                if num[i] > num[k]:
+                    l = i
+            # Swap num[l] and num[k]
+            num[l], num[k] = num[k], num[l]
+
+        # Reverse num[k + 1:]
+        left = k + 1
+        right = n - 1
+        while left < right:
+            num[left], num[right] = num[right], num[left]
+            left += 1
+            right -= 1
+        return num
+
+
+s = Solution()
+print s.nextPermutation([2, 1, 3])
+print s.nextPermutation([1, 2, 3])
+print s.nextPermutation([3, 2, 1])
+
+
+
+========================================
+(62). /Users/linxie/Documents/github/leetcode-python/palindrome_number/solution.py
+========================================
+
+
+class Solution:
+    # @return a boolean
+    def isPalindrome(self, x):
+        if x < 0:
+            return False
+        num_digit = 0
+        y = x
+        while y != 0:
+            y /= 10
+            num_digit += 1
+        if num_digit <= 1:
+            return True
+        # Reverse the right half
+        i = 0
+        t = 0
+        while i < num_digit / 2:
+            t = t * 10 + x % 10
+            x /= 10
+            i += 1
+        # Remove the middle digit if num_digit is odd
+        if num_digit % 2 == 1:
+            x /= 10
+        # Compare t and x
+        if t == x:
+            return True
+        else:
+            return False
+
+
+
+========================================
+(63). /Users/linxie/Documents/github/leetcode-python/palindrome_partitioning/solution.py
+========================================
+
+
+class Solution:
+    # @param s, a string
+    # @return a list of lists of string
+    def partition(self, s):
+        res = []
+        cand = []
+        self.partition_aux(s, cand, res)
+        return res
+
+    def partition_aux(self, s, cand, res):
+        if not s:
+            res.append(cand[:])
+        else:
+            for i, e in enumerate(s):
+                if self.is_palindrome(s[:i + 1]):
+                    cand.append(s[:i + 1])
+                    self.partition_aux(s[i + 1:], cand, res)
+                    cand.pop()
+
+    def is_palindrome(self, s):
+        left = 0
+        right = len(s) - 1
+        while left < right:
+            if s[left] != s[right]:
+                return False
+            left += 1
+            right -= 1
+        return True
+
+
+
+========================================
+(64). /Users/linxie/Documents/github/leetcode-python/partition_list/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @param x, an integer
+    # @return a ListNode
+    def partition(self, head, x):
+        if head is None:
+            return head
+        large = None
+        large_end = None
+        res = None
+        res_end = None
+        while head is not None:
+            next_node = head.next
+            if head.val >= x:
+                if large is None:
+                    large = head
+                    large_end = large
+                else:
+                    large_end.next = head
+                    large_end = large_end.next
+            else:
+                if res is None:
+                    res = head
+                    res_end = res
+                else:
+                    res_end.next = head
+                    res_end = res_end.next
+            head = next_node
+        if large_end is not None:
+            large_end.next = None
+        if res is not None:
+            res_end.next = large
+        else:
+            res = large
+        return res
+
+
+
+========================================
+(65). /Users/linxie/Documents/github/leetcode-python/pascals_triangle/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of lists of integers
+    def generate(self, numRows):
+        res = []
+        if numRows == 0:
+            return res
+        res.append([1])
+        if numRows == 1:
+            return res
+        res.append([1, 1])
+        if numRows == 2:
+            return res
+        # n is current row index (starting from 0)
+        for n in range(2, numRows):
+            cur = []
+            for i in range(n + 1):
+                if i == 0:
+                    cur.append(1)
+                elif i == n:
+                    cur.append(1)
+                else:
+                    c = res[n - 1][i - 1] + res[n - 1][i]
+                    cur.append(c)
+            res.append(cur)
+        return res
+
+
+
+========================================
+(66). /Users/linxie/Documents/github/leetcode-python/pascals_triangle_ii/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of integers
+    def getRow(self, rowIndex):
+        res = [1 for i in range(rowIndex + 1)]
+        for row in range(rowIndex + 1):
+            for col in range(row + 1):
+                col = row - col
+                if col < row and col > 0:
+                    res[col] += res[col - 1]
+        return res
+
+
+
+========================================
+(67). /Users/linxie/Documents/github/leetcode-python/path_sum/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @param sum, an integer
+    # @return a boolean
+    def hasPathSum(self, root, sum):
+        if root is None:
+            return False
+        elif root.left is None and root.right is None:
+            if sum == root.val:
+                return True
+            else:
+                return False
+        else:
+            sum -= root.val
+            return (self.hasPathSum(root.left, sum)
+                    or self.hasPathSum(root.right, sum))
+
+
+
+========================================
+(68). /Users/linxie/Documents/github/leetcode-python/path_sum_ii/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @param sum, an integer
+    # @return a list of lists of integers
+    def pathSum(self, root, sum):
+        if root is None:
+            return []
+        one = []
+        res = []
+        self.ps(root, sum, one, res)
+        return res
+
+    def ps(self, root, sum, one, res):
+        if root is None:
+            return
+        elif root.left is None and root.right is None:
+            if root.val == sum:
+                one.append(root.val)
+                res.append(one[:])
+                one.pop()
+        else:
+            one.append(root.val)
+            self.ps(root.left, sum - root.val, one, res)
+            self.ps(root.right, sum - root.val, one, res)
+            one.pop()
+
+
+
+========================================
+(69). /Users/linxie/Documents/github/leetcode-python/permutations/solution.py
+========================================
+
+
+class Solution:
+    # @param num, a list of integer
+    # @return a list of lists of integers
+    def permute(self, num):
+        if not num:
+            return [[]]
+        else:
+            res = []
+            for i, e in enumerate(num):
+                rest = num[:i] + num[i + 1:]
+                rest_perms = self.permute(rest)
+                for perm in rest_perms:
+                    perm.append(e)
+                res += rest_perms
+            return res
+
+
+
+========================================
+(70). /Users/linxie/Documents/github/leetcode-python/permutations_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param num, a list of integer
+    # @return a list of lists of integers
+    def permuteUnique(self, num):
+        d = {}
+        return self.permute(num, d)
+
+    def permute(self, num, d):
+        if not num:
+            return [[]]
+        else:
+            res = []
+            for i, c in enumerate(num):
+                if c in d:
+                    continue
+                else:
+                    d[c] = True
+                rest_perms = self.permuteUnique(num[:i] + num[i + 1:])
+                for perm in rest_perms:
+                    perm.insert(0, c)
+                res += rest_perms
+            return res
+
+
+
+========================================
+(71). /Users/linxie/Documents/github/leetcode-python/plus_one/solution.py
+========================================
+
+
+class Solution:
+    # @param digits, a list of integer digits
+    # @return a list of integer digits
+    def plusOne(self, digits):
+        digits.reverse()
+        res = []
+        t = (digits[0] + 1) % 10
+        carry = (digits[0] + 1) / 10
+        res.append(t)
+        for d in digits[1:]:
+            t = (d + carry) % 10
+            carry = (d + carry) / 10
+            res.append(t)
+        if carry == 1:
+            res.append(1)
+        res.reverse()
+        return res
+
+
+
+========================================
+(72). /Users/linxie/Documents/github/leetcode-python/populating_next_right_pointers_in_each_node/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+#         self.next = None
+
+class Solution:
+    # @param root, a tree node
+    # @return nothing
+    def connect(self, root):
+        if root is not None:
+            if root.left is not None:
+                root.left.next = root.right
+            if root.right is not None and root.next is not None:
+                root.right.next = root.next.left
+            self.connect(root.left)
+            self.connect(root.right)
+
+
+
+========================================
+(73). /Users/linxie/Documents/github/leetcode-python/populating_next_right_pointers_in_each_node_ii/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+#         self.next = None
+
+class Solution:
+    # @param root, a tree node
+    # @return nothing
+    def connect(self, root):
+        head = None  # Head node of the next level
+        prev = None
+        while root is not None:
+            # Build the next level of root
+            while root is not None:
+                if root.left is not None:
+                    if prev is None:
+                        head = root.left
+                        prev = head
+                    else:
+                        prev.next = root.left
+                        prev = prev.next
+                if root.right is not None:
+                    if prev is None:
+                        head = root.right
+                        prev = head
+                    else:
+                        prev.next = root.right
+                        prev = prev.next
+                root = root.next
+            root = head
+            head = None
+            prev = None
+
+
+
+========================================
+(74). /Users/linxie/Documents/github/leetcode-python/pow(x,_n)/solution.py
+========================================
+
+
+class Solution:
+    # @param x, a float
+    # @param n, a integer
+    # @return a float
+    def pow(self, x, n):
+        if n == 0:
+            return 1.0
+        elif n < 0:
+            return 1.0 / self.pow(x, -n)
+        else:
+            if n % 2 == 0:
+                return self.pow(x * x, n / 2)
+            else:
+                return self.pow(x * x, (n - 1) / 2) * x
+
+
+
+========================================
+(75). /Users/linxie/Documents/github/leetcode-python/recover_binary_search_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a tree node
+    def recoverTree(self, root):
+        self.prev = None
+        self.first = None
+        self.second = None
+        self.traverse(root)
+        self.first.val, self.second.val = self.second.val, self.first.val
+        return root
+
+    def traverse(self, root):
+        if root is not None:
+            self.traverse(root.left)
+            if self.prev is not None:
+                if self.first is None and root.val < self.prev.val:
+                    self.first = self.prev
+                    self.second = root
+                elif self.first is not None and root.val < self.prev.val:
+                    self.second = root
+            self.prev = root
+            self.traverse(root.right)
+
+
+
+========================================
+(76). /Users/linxie/Documents/github/leetcode-python/regular_expression_matching/solution.py
+========================================
+
+
+class Solution:
+    # @return a boolean
+    def isMatch(self, s, p):
+        if not p:
+            return not s
+        if not s:
+            return False
+        return self.is_match_aux(s, p, 0, 0)
+
+    def is_match_aux(self, s, p, si, pi):
+        if pi == len(p):
+            return si == len(s)
+        # Next char is not *
+        # pi may be the last char
+        if pi < len(p) - 1 and p[pi + 1] != '*' or pi == len(p) - 1:
+            assert p[pi] != '*'
+            # si must be in bound
+            is_cur_matched = si < len(s) and (p[pi] == s[si] or p[pi] == '.')
+            is_next_matched = self.is_match_aux(s, p, si + 1, pi + 1)
+            return is_cur_matched and is_next_matched
+        # Next char is *
+        while si < len(s) and pi < len(p) and (p[pi] == s[si] or p[pi] == '.'):
+            if self.is_match_aux(s, p, si, pi + 2):
+                return True
+            si += 1
+        return self.is_match_aux(s, p, si, pi + 2)
+
+
+s = Solution()
+print s.isMatch("aa", "a")
+print s.isMatch("aa", "aa")
+print s.isMatch("aaa", "aa")
+print s.isMatch("aa", "a*")
+print s.isMatch("aa", ".*")
+print s.isMatch("ab", ".*")
+print s.isMatch("aab", "c*a*b")
+
+
+
+========================================
+(77). /Users/linxie/Documents/github/leetcode-python/remove_duplicates_from_sorted_array/solution.py
+========================================
+
+
+class Solution:
+    # @param a list of integers
+    # @return an integer
+    def removeDuplicates(self, A):
+        if not A:
+            return 0
+        if len(A) == 1:
+            return 1
+        j = 0  # Position of last processed non-duplicate
+        n = len(A)
+        for i in range(1, n):
+            if A[i] != A[j]:
+                A[j + 1] = A[i]
+                j += 1
+        return j + 1
+
+
+
+========================================
+(78). /Users/linxie/Documents/github/leetcode-python/remove_duplicates_from_sorted_array_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param A a list of integers
+    # @return an integer
+    def removeDuplicates(self, A):
+        if not A:
+            return 0
+        j = 0
+        counter = 0  # How many times repeated (1 for twice)
+        n = len(A)
+        for i in range(1, n):
+            if A[i] == A[j] and counter <= 0:
+                j += 1
+                A[j] = A[i]
+                counter += 1
+            elif A[i] != A[j]:
+                j += 1
+                A[j] = A[i]
+                counter = 0
+        return j + 1
+
+
+
+========================================
+(79). /Users/linxie/Documents/github/leetcode-python/remove_duplicates_from_sorted_list/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @return a ListNode
+    def deleteDuplicates(self, head):
+        if head is None:
+            return None
+        if head.next is None:
+            return head
+        last = head
+        current = head.next
+        while current is not None:
+            next_node = current.next
+            if current.val == last.val:
+                last.next = next_node
+                # free(current) in C
+            else:
+                last = last.next
+            current = next_node
+        return head
+
+
+
+========================================
+(80). /Users/linxie/Documents/github/leetcode-python/remove_duplicates_from_sorted_list_ii/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @return a ListNode
+    def deleteDuplicates(self, head):
+        d = {}
+        h = head
+        while head is not None:
+            if head.val not in d:
+                d[head.val] = 1
+            else:
+                d[head.val] += 1
+            head = head.next
+        res = ListNode(0)  # Dummy head of result list
+        end = res  # End of result list
+        while h is not None:
+            if d[h.val] == 1:
+                end.next = h
+                end = end.next
+            h = h.next
+        end.next = None
+        return res.next
+
+
+
+========================================
+(81). /Users/linxie/Documents/github/leetcode-python/remove_element/solution.py
+========================================
+
+
+class Solution:
+    # @param    A       a list of integers
+    # @param    elem    an integer, value need to be removed
+    # @return an integer
+    def removeElement(self, A, elem):
+        n = len(A)
+        j = 0
+        for i in range(n):
+            if A[i] != elem:
+                A[j] = A[i]
+                j += 1
+        return j
+
+
+
+========================================
+(82). /Users/linxie/Documents/github/leetcode-python/remove_nth_node_from_end_of_list/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @return a ListNode
+    def removeNthFromEnd(self, head, n):
+        if head is None:
+            return None
+        elif n == 0:
+            return head
+        else:
+            q = p = pp = head  # `pp` is the node preceding `p`
+            while q is not None:
+                if n <= 0:
+                    pp = p
+                    p = p.next
+                q = q.next
+                n -= 1
+            # Remove the head node
+            if pp is p:
+                head = pp.next
+            else:
+                pp.next = p.next
+                # Free p
+            return head
+
+
+
+========================================
+(83). /Users/linxie/Documents/github/leetcode-python/reverse_integer/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def reverse(self, x):
+        pos = True
+        if x < 0:
+            pos = False
+            x = -x
+        t = 0
+        while x != 0:
+            t = t * 10 + x % 10
+            x /= 10
+        if not pos:
+            return -t
+        return t
+
+
+
+========================================
+(84). /Users/linxie/Documents/github/leetcode-python/reverse_linked_list_ii/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @param m, an integer
+    # @param n, an integer
+    # @return a ListNode
+    def reverseBetween(self, head, m, n):
+        i = 1
+        res = head  # Start of the beginning part
+        res_end = head  # End of the beginning part
+        rev = None  # Start of reversed part
+        rev_end = None  # End of reversed part
+        while head is not None:
+            next_node = head.next
+            if i < m:
+                res_end = head
+            elif i >= m and i <= n:
+                head.next = rev
+                rev = head
+                if i == m:
+                    rev_end = head
+            else:  # i > n
+                break
+            head = next_node
+            i += 1
+        # No beginning part
+        if m == 1:
+            res = rev
+            res_end = rev_end
+        else:
+            res_end.next = rev
+        rev_end.next = head
+        return res
+
+
+
+========================================
+(85). /Users/linxie/Documents/github/leetcode-python/reverse_nodes_in_k-group/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @param k, an integer
+    # @return a ListNode
+    def reverseKGroup(self, head, k):
+        if head is None:
+            return head
+        h = head
+        n = 0
+        while h is not None:
+            n += 1
+            h = h.next
+        num_groups = n / k
+        # if k is larger than n, return head
+        if num_groups == 0:
+            return head
+        # `last_group` is the 1-base index of the last group node
+        last_group = num_groups * k
+        res = None
+        res_end = None
+        temp = None
+        temp_end = None
+        i = 1
+        while head is not None:
+            next_node = head.next
+            if i <= last_group:
+                # Appended current node to `temp` list
+                if temp is None:
+                    temp_end = head
+                head.next = temp
+                temp = head
+                # Appended `temp` list to `res`
+                if i % k == 0:
+                    if res is None:
+                        res = temp
+                        res_end = temp_end
+                    else:
+                        res_end.next = temp
+                        res_end = temp_end
+                    # Reset `temp`
+                    temp = None
+            else:
+                res_end.next = head
+                break
+            i += 1
+            head = next_node
+        return res
+
+
+
+========================================
+(86). /Users/linxie/Documents/github/leetcode-python/reverse_words_in_a_string/solution.py
+========================================
+
+
+class Solution:
+    # @param s, a string
+    # @return a string
+    def reverseWords(self, s):
+        ls = list(s)
+        # C-like processing
+        # Process spaces
+        i = 0
+        j = len(s) - 1
+        while i <= j:
+            if ls[i] != ' ' and ls[j] != ' ':
+                break
+            if ls[i] == ' ':
+                i += 1
+            if ls[j] == ' ':
+                j -= 1
+        start = i
+        end = j
+        # Remove duplicate spaces between words
+        k = start  # Last processed
+        for p in range(start, end + 1):
+            if p > start and ls[p] == ' ' and ls[p] == ls[p - 1]:
+                pass
+            else:
+                ls[k] = ls[p]
+                k += 1
+        end = k - 1
+        # Now start..end is the processed array of characters
+
+        # Reverse all characters between start and end
+        self.reverse(ls, start, end)
+
+        # Reverse each word
+        ws = start  # Word start index
+        we = start  # Word end index
+        for i in range(start, end + 1):
+            if ls[i] == ' ' or i == end:
+                we = end if i == end else i - 1
+                self.reverse(ls, ws, we)
+                ws = i + 1
+        return ''.join(ls[start:end + 1])
+
+    def reverse(self, a, i, j):
+        while i < j:
+            a[i], a[j] = a[j], a[i]
+            i += 1
+            j -= 1
+
+    def reverseWords2(self, s):
+        cs = list(s)  # Make a C-string like list
+        n = len(cs)
+        # Remove leading and trailing spaces
+        left = 0
+        right = n - 1
+        while left <= right and (cs[left] == ' ' or cs[right] == ' '):
+            if cs[left] == ' ':
+                left += 1
+            if cs[right] == ' ':
+                right -= 1
+        # The string contains only spaces
+        if left > right:
+            return ''
+        # Reverse the whole list
+        self.reverse(cs, left, right)
+        # Remove multiple spaces between two words
+        j = left
+        for i in range(left, right + 1):
+            if cs[i] != ' ' or cs[i] == ' ' and cs[i - 1] != ' ':
+                cs[j] = cs[i]
+                j += 1
+        right = j - 1
+        # Reverse each word
+        start = left
+        q = start
+        while q <= right:
+            while q <= right and cs[q] != ' ':
+                q += 1
+            # q - 1 is the end index of the word
+            self.reverse(cs, start, q - 1)
+            # Start of next word
+            start = q
+            while start <= right and cs[start] == ' ':
+                start += 1
+            q = start
+        return ''.join(cs[left:right + 1])
+
+
+
+========================================
+(87). /Users/linxie/Documents/github/leetcode-python/roman_to_integer/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def romanToInt(self, s):
+        roman = {
+            'I': 1,
+            'V': 5,
+            'X': 10,
+            'L': 50,
+            'C': 100,
+            'D': 500,
+            'M': 1000,
+        }
+        res = 0
+        for i, c in enumerate(s):
+            if i < len(s) - 1 and roman[c] < roman[s[i + 1]]:
+                res -= roman[c]
+            else:
+                res += roman[c]
+        return res
+
+
+
+========================================
+(88). /Users/linxie/Documents/github/leetcode-python/rotate_image/solution.py
+========================================
+
+
+class Solution:
+    # @param matrix, a list of lists of integers
+    # @return a list of lists of integers
+    def rotate(self, matrix):
+        n = len(matrix)
+        # Layers
+        for i in range(n / 2):
+            # Each layer's index range
+            start = i
+            end = n - 1 - i
+            for j in range(start, end):
+                offset = j - start
+                top = matrix[start][j]
+                # Left to Top
+                matrix[start][j] = matrix[end - offset][start]
+                # Bottom to Left
+                matrix[end - offset][start] = matrix[end][end - offset]
+                # Right to Bottom
+                matrix[end][end - offset] = matrix[j][end]
+                # Top to Right
+                matrix[j][end] = top
+        return matrix
+
+
+
+========================================
+(89). /Users/linxie/Documents/github/leetcode-python/rotate_list/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @param k, an integer
+    # @return a ListNode
+    def rotateRight(self, head, k):
+        if head is None:
+            return None
+        n = 0
+        h = head
+        while head is not None:
+            n += 1
+            head = head.next
+        k = k % n
+        if k == 0:
+            return h
+        res = h  # Head of result
+        prev = h  # Previous node of result
+        i = 0
+        while res is not None:
+            if i == n - k:
+                break
+            prev = res
+            res = res.next
+            i += 1
+        end = res
+        while end.next is not None:
+            end = end.next
+        end.next = h
+        prev.next = None
+        return res
+
+
+
+========================================
+(90). /Users/linxie/Documents/github/leetcode-python/search_a_2d_matrix/solution.py
+========================================
+
+
+class Solution:
+    # @param matrix, a list of lists of integers
+    # @param target, an integer
+    # @return a boolean
+    def searchMatrix(self, matrix, target):
+        row_left = 0
+        row_right = len(matrix) - 1
+        while row_left <= row_right:
+            row_mid = row_left + (row_right - row_left) / 2
+            row = matrix[row_mid]
+            if target >= row[0] and target <= row[-1]:
+                left = 0
+                right = len(row) - 1
+                while left <= right:
+                    mid = left + (right - left) / 2
+                    if target == row[mid]:
+                        return True
+                    elif target < row[mid]:
+                        right = mid - 1
+                    else:
+                        left = mid + 1
+                return False
+            elif target < row[0]:
+                row_right = row_mid - 1
+            else:
+                row_left = row_mid + 1
+        return False
+
+
+
+========================================
+(91). /Users/linxie/Documents/github/leetcode-python/search_for_a_range/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @param target, an integer to be searched
+    # @return a list of length 2, [index1, index2]
+    def searchRange(self, A, target):
+        n = len(A)
+        if n == 1:
+            if A[0] == target:
+                return [0, 0]
+            else:
+                return [-1, -1]
+        left = 0
+        right = n - 1
+        lower = -1
+        upper = -1
+        # Find lower bound
+        while left <= right:
+            mid = (left + right) / 2
+            if mid < n - 1 and A[mid + 1] == target and A[mid] < target:
+                lower = mid + 1
+                break
+            elif A[mid] == target and mid == 0:
+                lower = mid
+                break
+            elif target <= A[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        # Find upper bound
+        left = 0
+        right = n - 1
+        while left <= right:
+            mid = (left + right) / 2
+            if mid < n - 1 and A[mid + 1] > target and A[mid] == target:
+                upper = mid
+                break
+            elif A[mid] == target and mid == n - 1:
+                upper = mid
+                break
+            elif target < A[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        return [lower, upper]
+
+
+
+========================================
+(92). /Users/linxie/Documents/github/leetcode-python/search_in_rotated_sorted_array/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @param target, an integer to be searched
+    # @return an integer
+    def search(self, A, target):
+        left = 0
+        right = len(A) - 1
+        while left <= right:
+            mid = left + (right - left) / 2
+            if target == A[mid]:
+                return mid
+            # Left part is sorted
+            if A[mid] > A[right]:
+                if target < A[mid] and target >= A[left]:
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            # Right part is sorted
+            else:
+                if target > A[mid] and target <= A[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+        return -1
+
+
+
+========================================
+(93). /Users/linxie/Documents/github/leetcode-python/search_in_rotated_sorted_array_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param A a list of integers
+    # @param target an integer
+    # @return a boolean
+    def search(self, A, target):
+        left = 0
+        right = len(A) - 1
+        while left <= right:
+            mid = left + (right - left) / 2
+            if target == A[mid]:
+                return True
+            # Left part is sorted
+            if A[mid] > A[right]:
+                if target < A[mid] and target >= A[left]:
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            # Right part is sorted
+            elif A[mid] < A[right]:
+                if target > A[mid] and target <= A[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+            else:
+                right -= 1
+        return False
+
+
+
+========================================
+(94). /Users/linxie/Documents/github/leetcode-python/set_matrix_zeroes/solution.py
+========================================
+
+
+class Solution:
+    # @param matrix, a list of lists of integers
+    # RETURN NOTHING, MODIFY matrix IN PLACE.
+    def setZeroes(self, matrix):
+        n = len(matrix)
+        m = len(matrix[0])
+        column_zero = False
+        row_zero = False
+        for i in range(n):
+            for j in range(m):
+                if matrix[i][j] == 0:
+                    # Check whether the first row and column contain
+                    # zeroes before recording
+                    if i == 0:
+                        row_zero = True
+                    if j == 0:
+                        column_zero = True
+                    # Record zeroes using the first row and column
+                    matrix[i][0] = 0
+                    matrix[0][j] = 0
+        # Set zeroes except for the first row and column
+        for i in range(n):
+            for j in range(m):
+                if i > 0 and j > 0:
+                    if matrix[0][j] == 0 or matrix[i][0] == 0:
+                        matrix[i][j] = 0
+        # Set the first row and column
+        if row_zero:
+            for j in range(m):
+                matrix[0][j] = 0
+        if column_zero:
+            for i in range(n):
+                matrix[i][0] = 0
+
+
+
+========================================
+(95). /Users/linxie/Documents/github/leetcode-python/simplify_path/solution.py
+========================================
+
+
+class Solution:
+    # @param path, a string
+    # @return a string
+    def simplifyPath(self, path):
+        ps = path.split('/')[1:]
+        res = []
+        for d in ps:
+            if d == '..':
+                if res:
+                    res.pop()
+            elif d == '.' or d == '':
+                pass
+            else:
+                res.append(d)
+        return '/' + '/'.join(res)
+
+
+
+========================================
+(96). /Users/linxie/Documents/github/leetcode-python/single_number/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integer
+    # @return an integer
+    def singleNumber(self, A):
+        if not A:
+            return None
+        p = A[0]
+        for i in range(1, len(A)):
+            p = p ^ A[i]
+        return p
+
+
+
+========================================
+(97). /Users/linxie/Documents/github/leetcode-python/single_number_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integer
+    # @return an integer
+    def singleNumber(self, A):
+        # Assume 32-bit integer
+        num_of_bits = 32  # Change this to 64 on 64-bit platform
+        res_bit = 0
+        res = 0
+        # First check whether the single number is negative
+        for num in A:
+            bit = 1 if num & (1 << (num_of_bits - 1)) != 0 else 0
+            res_bit = (res_bit + bit) % 3
+        positive = True if res_bit == 0 else False
+
+        for i in range(num_of_bits - 1):
+            res_bit = 0
+            # For each bit of each number, calculate each bit
+            # of the single number
+            for num in A:
+                bit = 1 if num & (1 << i) != 0 else 0
+                res_bit = (res_bit + bit) % 3
+            # If single number is positive
+            if positive and res_bit == 1:
+                res += 1 << i
+            # If single number is negative
+            if not positive and res_bit == 0:
+                res += 1 << i
+        if not positive:
+            res = -(res + 1)
+        return res
+
+
+
+========================================
+(98). /Users/linxie/Documents/github/leetcode-python/sort_colors/solution.py
+========================================
+
+
+class Solution:
+    # @param A a list of integers
+    # @return nothing, sort in place
+    def sortColors(self, A):
+        n = len(A)
+        r = 0  # Last index of red
+        b = n - 1  # First index of white
+        i = 0
+        while i <= b:
+            if A[i] == 0:
+                A[i], A[r] = A[r], A[i]
+                r += 1
+                # Increment i because swapped item must be 1 or 0
+                i += 1
+            elif A[i] == 2:
+                A[i], A[b] = A[b], A[i]
+                b -= 1
+                # Do not increment i, since swapped item may be 0, 1, or 2
+                continue
+            # A[i] == 1
+            else:
+                i += 1
+
+
+
+========================================
+(99). /Users/linxie/Documents/github/leetcode-python/sort_list/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param head, a ListNode
+    # @return a ListNode
+    def sortList(self, head):
+        if head is None or head.next is None:
+            return head
+        # Find the middle node
+        slow = head
+        fast = head
+        prev = head  # Previous node to slow
+        while fast is not None and fast.next is not None:
+            prev = slow
+            slow = slow.next
+            fast = fast.next.next
+        # Split into two lists
+        left = head
+        right = None
+        if slow != fast:
+            prev.next = None
+            right = slow
+        left = self.sortList(left)
+        right = self.sortList(right)
+        return self.merge(left, right)
+
+    def merge(self, l1, l2):
+        if l1 is None:
+            return l2
+        if l2 is None:
+            return l1
+        res = None
+        end = res
+        while l1 is not None and l2 is not None:
+            if l1.val < l2.val:
+                small = l1
+                l1 = l1.next
+            else:
+                small = l2
+                l2 = l2.next
+            # First node
+            if res is None:
+                res = small
+                end = res
+            else:
+                end.next = small
+                end = end.next
+        if l1 is not None:
+            end.next = l1
+        if l2 is not None:
+            end.next = l2
+        return res
+
+
+
+========================================
+(100). /Users/linxie/Documents/github/leetcode-python/spiral_matrix_ii/solution.py
+========================================
+
+
+class Solution:
+    # @return a list of lists of integer
+    def generateMatrix(self, n):
+        matrix = [[0 for i in range(n)] for j in range(n)]
+        count = 1
+        for i in range(n / 2):
+            start = i
+            end = n - i - 1
+            width = end - start
+            for j in range(start, end):
+                offset = j - start
+                # Top
+                matrix[start][j] = count + offset
+                # Right
+                matrix[j][end] = count + width + offset
+                # Bottom
+                matrix[end][end - offset] = count + 2 * width + offset
+                # Left
+                matrix[end - offset][start] = count + 3 * width + offset
+            count += 4 * width
+        if n % 2 == 1:
+            mid = n / 2
+            matrix[mid][mid] = count
+        return matrix
+
+
+
+========================================
+(101). /Users/linxie/Documents/github/leetcode-python/sqrt(x)/solution.py
+========================================
+
+
+class Solution:
+    # @param x, an integer
+    # @return an integer
+    def sqrt(self, x):
+        left = 0
+        right = x
+        while left <= right:
+            mid = left + (right - left) / 2
+            square = mid * mid
+            if square == x:
+                return mid
+            elif square < x:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return (left + right) / 2
+
+
+
+========================================
+(102). /Users/linxie/Documents/github/leetcode-python/subsets/solution.py
+========================================
+
+
+class Solution:
+    # @param S, a list of integer
+    # @return a list of lists of integer
+    def subsets(self, S):
+        S.sort()
+        return self._subsets(S, len(S))
+
+    def _subsets(self, S, k):
+        if k == 0:
+            return [[]]
+        else:
+            res = [[]]
+            for i in range(len(S)):
+                rest_subsets = self._subsets(S[i + 1:], k - 1)
+                for subset in rest_subsets:
+                    subset.insert(0, S[i])
+                res += rest_subsets
+            return res
+
+
+
+========================================
+(103). /Users/linxie/Documents/github/leetcode-python/subsets_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param num, a list of integer
+    # @return a list of lists of integer
+    def subsetsWithDup(self, S):
+        S.sort()
+        return self._subsets(S, len(S))
+
+    def _subsets(self, S, k):
+        if k == 0:
+            return [[]]
+        else:
+            res = [[]]
+            for i in range(len(S)):
+                if i > 0 and S[i] == S[i - 1]:
+                    pass
+                else:
+                    rest_subsets = self._subsets(S[i + 1:], k - 1)
+                    for subset in rest_subsets:
+                        subset.insert(0, S[i])
+                    res += rest_subsets
+            return res
+
+
+
+========================================
+(104). /Users/linxie/Documents/github/leetcode-python/sum_root_to_leaf_numbers/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return an integer
+    def sumNumbers(self, root):
+        self.res = 0  # global variable for sum
+        num = 0
+        self.sn(root, num)
+        return self.res
+
+    def sn(self, root, num):
+        if root is None:
+            return
+        elif root.left is None and root.right is None:
+            num += root.val
+            self.res += num
+        else:
+            num += root.val
+            self.sn(root.left, 10 * num)
+            self.sn(root.right, 10 * num)
+
+
+
+========================================
+(105). /Users/linxie/Documents/github/leetcode-python/surrounded_regions/solution.py
+========================================
+
+
+class Solution:
+    # @param board, a 9x9 2D array
+    # Capture all regions by modifying the input board in-place.
+    # Do not return any value.
+    def solve(self, board):
+        n = len(board)
+        if n == 0:
+            return
+        m = len(board[0])
+        if m == 0:
+            return
+        self.n = n
+        self.m = m
+        # Go through the four edges to search O's
+        for i in range(n):
+            for j in range(m):
+                if i == 0 or i == n - 1 or j == 0 or j == m - 1:
+                    if board[i][j] == 'O':
+                        self.bfs(board, j, i)
+        for i in range(n):
+            for j in range(m):
+                if board[i][j] == 'O':
+                    board[i][j] = 'X'
+                if board[i][j] == 'Y':
+                    board[i][j] = 'O'
+
+    def bfs(self, board, x, y):
+        """Use BFS to set O to Y"""
+        queue = []
+        board[y][x] = 'Y'
+        queue.append((x, y))
+        while queue:
+            root_x, root_y = queue.pop(0)
+            for node in self.adjacent(board, root_x, root_y):
+                x, y = node
+                if board[y][x] != 'Y':
+                    board[y][x] = 'Y'
+                    queue.append((x, y))
+
+    def adjacent(self, board, x, y):
+        res = []
+        if x + 1 < self.m and board[y][x + 1] == 'O':
+            res.append((x + 1, y))
+        if x - 1 > 0 and board[y][x - 1] == 'O':
+            res.append((x - 1, y))
+        if y + 1 < self.n and board[y + 1][x] == 'O':
+            res.append((x, y + 1))
+        if y - 1 > 0 and board[y - 1][x] == 'O':
+            res.append((x, y - 1))
+        return res
+
+
+
+========================================
+(106). /Users/linxie/Documents/github/leetcode-python/swap_nodes_in_pairs/solution.py
+========================================
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # @param a ListNode
+    # @return a ListNode
+    def swapPairs(self, head):
+        if head is None or head.next is None:
+            return head
+        else:
+            t = head.next
+            head.next = self.swapPairs(t.next)
+            t.next = head
+            return t
+
+
+
+========================================
+(107). /Users/linxie/Documents/github/leetcode-python/symmetric_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a boolean
+    def isSymmetric(self, root):
+        if root is None:
+            return True
+        if root.left is None and root.right is None:
+            return True
+        if root.left is not None and root.right is not None:
+            return self._isSymmetric(root.left, root.right)
+        return False
+
+    def _isSymmetric(self, left, right):
+        if left is None and right is None:
+            return True
+        if left is not None and right is not None:
+            return (left.val == right.val and
+                    self._isSymmetric(left.left, right.right) and
+                    self._isSymmetric(left.right, right.left))
+        return False
+
+
+
+========================================
+(108). /Users/linxie/Documents/github/leetcode-python/trapping_rain_water/solution.py
+========================================
+
+
+class Solution:
+    # @param A, a list of integers
+    # @return an integer
+    def trap(self, A):
+        n = len(A)
+        res = 0
+        last = 0
+        stack = []
+        for i in range(1, n):
+            if A[i] >= A[last]:
+                # Calculate trapped water
+                w = i - last - 1
+                area = w * A[last]
+                while stack:
+                    area -= A[stack.pop()]
+                res += area
+                last = i
+            else:
+                stack.append(i)
+        # Process remaining bars
+        if stack:
+            r = stack.pop()  # Rightmost effective bar
+            while stack:
+                if A[stack[-1]] >= A[r]:
+                    r = stack.pop()
+                else:
+                    break
+            while stack:
+                i = stack.pop()
+                if A[i] < A[r]:
+                    res += A[r] - A[i]
+                else:
+                    r = i
+        return res
+
+
+
+========================================
+(109). /Users/linxie/Documents/github/leetcode-python/triangle/solution.py
+========================================
+
+
+class Solution:
+    # @param triangle, a list of lists of integers
+    # @return an integer
+    def minimumTotal(self, triangle):
+        t = [[0 for col in row] for row in triangle]  # Initialize t
+        n = len(triangle)
+        row = n - 1
+        while row >= 0:
+            if row == n - 1:
+                for col in range(row + 1):
+                    t[row][col] = triangle[row][col]
+            else:
+                for col in range(row + 1):
+                    minsum = min(t[row + 1][col], t[row + 1][col + 1])
+                    t[row][col] = triangle[row][col] + minsum
+            row -= 1
+        return t[0][0]
+
+
+
+========================================
+(110). /Users/linxie/Documents/github/leetcode-python/two_sum/solution.py
+========================================
+
+
+class Solution:
+    # @return a tuple, (index1, index2)
+    def twoSum(self, num, target):
+        d = {}
+        for i, e in enumerate(num):
+            if e in d:
+                return d[e] + 1, i + 1
+            d[target - e] = i
+
+
+
+========================================
+(111). /Users/linxie/Documents/github/leetcode-python/unique_binary_search_trees_ii/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @return a list of tree node
+    def generateTrees(self, n):
+        a = range(1, n + 1)
+        return self.generate_bst(a)
+
+    def generate_bst(self, a):
+        if not a:
+            return [None]
+        else:
+            res = []
+            for i, c in enumerate(a):
+                left = self.generate_bst(a[:i])
+                right = self.generate_bst(a[i + 1:])
+                for l in left:
+                    for r in right:
+                        root = TreeNode(c)
+                        root.left = l
+                        root.right = r
+                        res.append(root)
+            return res
+
+
+
+========================================
+(112). /Users/linxie/Documents/github/leetcode-python/unique_paths/solution.py
+========================================
+
+
+class Solution:
+    # @return an integer
+    def uniquePaths(self, m, n):
+        t = [[1] * m] * n
+        i = j = 0
+        for i in range(n):
+            for j in range(m):
+                if i == 0 and j == 0:
+                    continue
+                elif i == 0:
+                    t[i][j] = 1
+                elif j == 0:
+                    t[i][j] = 1
+                else:
+                    t[i][j] = t[i - 1][j] + t[i][j - 1]
+        return t[n - 1][m - 1]
+
+
+
+========================================
+(113). /Users/linxie/Documents/github/leetcode-python/unique_paths_ii/solution.py
+========================================
+
+
+class Solution:
+    # @param obstacleGrid, a list of lists of integers
+    # @return an integer
+    def uniquePathsWithObstacles(self, obstacleGrid):
+        grid = obstacleGrid
+        n = len(grid)
+        m = len(grid[0])
+        t = [[-1 for i in range(m)] for j in range(n)]
+        for i in range(n):
+            for j in range(m):
+                if grid[i][j] == 1:
+                    t[i][j] = 0
+                else:
+                    if i == 0 and j == 0:
+                        t[i][j] = 1
+                    elif i == 0:
+                        t[i][j] = t[i][j - 1]
+                    elif j == 0:
+                        t[i][j] = t[i - 1][j]
+                    else:
+                        t[i][j] = t[i - 1][j] + t[i][j - 1]
+        return t[n - 1][m - 1]
+
+
+
+========================================
+(114). /Users/linxie/Documents/github/leetcode-python/valid_palindrome/solution.py
+========================================
+
+
+class Solution:
+    # @param s, a string
+    # @return a boolean
+    def isPalindrome(self, s):
+        if not s:
+            return True
+        left = 0
+        right = len(s) - 1
+        while left < right:
+            if s[left].isalnum() and s[right].isalnum():
+                if s[left].lower() != s[right].lower():
+                    return False
+                left += 1
+                right -= 1
+            else:
+                if not s[left].isalnum():
+                    left += 1
+                if not s[right].isalnum():
+                    right -= 1
+        return True
+
+
+
+========================================
+(115). /Users/linxie/Documents/github/leetcode-python/valid_parentheses/solution.py
+========================================
+
+
+class Solution:
+    # @return a boolean
+    def isValid(self, s):
+        pars = {
+            ')': '(',
+            ']': '[',
+            '}': '{',
+        }
+        stack = []
+        for c in s:
+            # Left parenthesis
+            if c not in pars:
+                stack.append(c)
+            # Right parenthesis
+            else:
+                if stack:
+                    if stack[-1] == pars[c]:
+                        stack.pop()
+                    else:
+                        return False
+                else:
+                    return False
+        if stack:
+            return False
+        else:
+            return True
+
+
+
+========================================
+(116). /Users/linxie/Documents/github/leetcode-python/valid_sudoku/solution.py
+========================================
+
+
+class Solution:
+    # @param board, a 9x9 2D array
+    # @return a boolean
+    def isValidSudoku(self, board):
+        # Check rows
+        for i in range(9):
+            d = {}
+            for j in range(9):
+                if board[i][j] == '.':
+                    pass
+                elif board[i][j] in d:
+                    return False
+                else:
+                    d[board[i][j]] = True
+        # Check columns
+        for j in range(9):
+            d = {}
+            for i in range(9):
+                if board[i][j] == '.':
+                    pass
+                elif board[i][j] in d:
+                    return False
+                else:
+                    d[board[i][j]] = True
+        # Check sub-boxes
+        for m in range(0, 9, 3):
+            for n in range(0, 9, 3):
+                d = {}
+                for i in range(n, n + 3):
+                    for j in range(m, m + 3):
+                        if board[i][j] == '.':
+                            pass
+                        elif board[i][j] in d:
+                            return False
+                        else:
+                            d[board[i][j]] = True
+        return True
+
+
+
+========================================
+(117). /Users/linxie/Documents/github/leetcode-python/validate_binary_search_tree/solution.py
+========================================
+
+
+# Definition for a  binary tree node
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    # @param root, a tree node
+    # @return a boolean
+    def isValidBST(self, root):
+        if root is None:
+            return True
+        else:
+            left = True
+            right = True
+            if root.left is not None:
+                left = (self.max_node(root.left).val < root.val
+                        and self.isValidBST(root.left))
+            if root.right is not None:
+                right = (self.min_node(root.right).val > root.val
+                         and self.isValidBST(root.right))
+            if left and right:
+                return True
+            return False
+
+    def min_node(self, root):
+        while root.left is not None:
+            root = root.left
+        return root
+
+    def max_node(self, root):
+        while root.right is not None:
+            root = root.right
+        return root
+
+
+
+========================================
+(118). /Users/linxie/Documents/github/leetcode-python/word_ladder/solution.py
+========================================
+
+
+class Solution:
+    # @param start, a string
+    # @param end, a string
+    # @param dict, a set of string
+    # @return an integer
+    def ladderLength(self, start, end, dict):
+        queue = []
+        queue.append(start)
+        prev = {}
+        prev[start] = None
+        # Remove words that are same as start
+        for word in set(dict):
+            if start == word:
+                dict.remove(start)
+        dict.add(end)
+        while queue:
+            cur = queue.pop(0)
+            for word in set(dict):  # Iterate over the copy of dict
+                if self.is_adjacent(cur, word):
+                    dict.remove(word)  # Mark as visited
+                    prev[word] = cur
+                    queue.append(word)
+        if end not in prev:
+            return 0
+        res = 1
+        cur = end
+        while prev[cur] != start:
+            cur = prev[cur]
+            res += 1
+        return res + 1
+
+    def is_adjacent(self, word1, word2):
+        count = 0
+        n = len(word1)
+        for i in range(n):
+            if word1[i] != word2[i]:
+                count += 1
+        return count == 1
+
+
+s = Solution()
+print s.ladderLength("hit", "dow", set(["hot", "dot", "dog", "lot", "log"]))
+
+
