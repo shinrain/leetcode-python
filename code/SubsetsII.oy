@@ -1,0 +1,24 @@
+class Solution:
+	# @param num, a list of integer
+	# @return a list of lists of integer
+	def subsetsWithDup(self, S):
+		re =[]
+		S.sort()
+		helper(S,0,[],re)
+		return re
+
+def helper(s, k, r, re):
+	if k==len(s):
+		re.append(copy.deepcopy(r))
+		return
+	val = s[k]
+	n=k
+	while n<len(s) and s[n]==val:
+		n+=1
+	helper(s,n,r,re)
+	siz=len(r)
+	for i in range(k,n):
+		r.append(val)
+		helper(s,n,r,re)
+	for i in range(len(r)-1, siz-1,-1):
+		r.remove(r[i])
