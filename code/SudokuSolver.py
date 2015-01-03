@@ -44,3 +44,18 @@ def check(board, i, j):
 			if board[c][d]==board[i][j]:
 				return False
 	return True
+
+
+
+
+
+======
+
+version II "check":
+
+
+def check(board, i, j):
+	for ii in range(9):
+		if (board[i][ii]==board[i][j] and ii!=j) or (board[ii][j]==board[i][j] and ii!=i )or(board[i/3*3+ii/3][j/3*3+ii%3]==board[i][j]  and (i/3*3+ii/3!=i or j/3*3+ii%3!=j)):
+			return False
+	return TrueZZ

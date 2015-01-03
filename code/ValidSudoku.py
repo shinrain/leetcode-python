@@ -18,7 +18,6 @@ class Solution:
 				if check(col[j],val):
 					return False
 				set(col,j,val)
-
 				if check(sqr[i/3*3+j/3],val):
 					return False
 				set(sqr,i/3*3+j/3,val)
